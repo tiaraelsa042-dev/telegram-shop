@@ -600,3 +600,9 @@ function clearCache() {
 // Запуск приложения
 tg.ready();
 init();
+
+// Обработка команды /start для автоматического открытия
+if (window.location.search.includes('startapp')) {
+    tg.expand();
+    tg.HapticFeedback.notificationOccurred('success');
+}
