@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -27,11 +27,46 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: white;
+            padding: 10px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            background: #f0f0f0;
+            color: #666;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn.active {
+            background: #2481cc;
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
         .products-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 15px;
-            margin-bottom: 80px;
+            margin-bottom: 20px;
         }
         
         .product-card {
@@ -104,24 +139,116 @@
             cursor: pointer;
             font-weight: bold;
         }
+        
+        .cart-item {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .cart-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .cart-item-name {
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .cart-item-price {
+            color: #ff4444;
+            font-weight: bold;
+        }
+        
+        .cart-item-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .quantity-btn {
+            width: 30px;
+            height: 30px;
+            border: none;
+            border-radius: 5px;
+            background: #2481cc;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .quantity {
+            font-weight: bold;
+            min-width: 30px;
+            text-align: center;
+        }
+        
+        .remove-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .cart-summary {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .empty-cart {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 15px;
+            color: #666;
+        }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1> Мой Магазин</h1>
+        <h1>Мой Магазин</h1>
         <p>Товары с самовывозом</p>
     </div>
     
-    <div id="products" class="products-grid">
-        <!-- Товары загружаются здесь -->
+    <div class="tab-buttons">
+        <button class="tab-btn active" onclick="switchTab('products')">🛍️ Покупки</button>
+        <button class="tab-btn" onclick="switchTab('cart')">🛒 Корзина</button>
     </div>
     
-    <div class="cart-footer">
-        <div>
-            <strong>Корзина: <span id="cart-total">0</span> руб.</strong>
-            <div id="cart-count">0 товаров</div>
+    <div id="products-tab" class="tab-content active">
+        <div id="products" class="products-grid">
+            <!-- Товары загружаются здесь -->
         </div>
-        <button class="checkout-btn" onclick="checkout()"> Оформить</button>
+    </div>
+    
+    <div id="cart-tab" class="tab-content">
+        <div id="cart-items">
+            <!-- Товары корзины загружаются здесь -->
+        </div>
+        <div id="cart-empty" class="empty-cart" style="display: none;">
+            <h3>🛒 Корзина пуста</h3>
+            <p>Добавьте товары из каталога</p>
+        </div>
+        <div id="cart-summary" class="cart-summary">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <div>
+                    <strong>Итого: <span id="cart-total">0</span> руб.</strong>
+                    <div id="cart-count">0 товаров</div>
+                </div>
+                <button class="checkout-btn" onclick="checkout()">Оформить заказ</button>
+            </div>
+        </div>
     </div>
 
     <script src="app.js"></script>
