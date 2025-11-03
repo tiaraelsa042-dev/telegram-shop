@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мой Магазин</title>
+    <title>Vape Shop</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         * {
@@ -14,257 +14,305 @@
         }
         
         body {
-            background: #f5f5f5;
-            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
         }
         
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .user-info-btn {
-            background: #2481cc;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 14px;
-            margin-top: 10px;
-            transition: background 0.3s;
-        }
-        
-        .user-info-btn:hover {
-            background: #1a6bb3;
-        }
-        
-        .tab-buttons {
+        /* Проверка возраста */
+        .age-verification {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.95);
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            background: white;
-            padding: 10px;
-            border-radius: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
         }
         
-        .tab-btn {
+        .age-modal {
+            background: #2a2a2a;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+        }
+        
+        .age-modal h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        
+        .age-modal p {
+            margin-bottom: 30px;
+            color: #aaa;
+        }
+        
+        .age-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .age-btn {
             flex: 1;
-            padding: 12px;
+            padding: 15px;
             border: none;
             border-radius: 10px;
-            background: #f0f0f0;
-            color: #666;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s;
         }
         
-        .tab-btn.active {
-            background: #2481cc;
+        .age-btn.yes {
+            background: #4CAF50;
             color: white;
         }
         
-        .tab-content {
-            display: none;
+        .age-btn.no {
+            background: #f44336;
+            color: white;
         }
         
-        .tab-content.active {
-            display: block;
+        /* Основной интерфейс */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            text-align: center;
         }
         
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        
+        /* Категории */
+        .categories {
+            display: flex;
+            gap: 10px;
+            padding: 15px;
+            overflow-x: auto;
+            background: #2a2a2a;
+        }
+        
+        .category-btn {
+            background: #3a3a3a;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .category-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        /* Поиск */
+        .search-bar {
+            padding: 15px;
+            background: #2a2a2a;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 25px;
+            background: #3a3a3a;
+            color: #fff;
+            font-size: 16px;
+        }
+        
+        .search-input::placeholder {
+            color: #888;
+        }
+        
+        /* Сетка товаров */
         .products-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 15px;
-            margin-bottom: 20px;
+            padding: 15px;
         }
         
         .product-card {
-            background: white;
+            background: #2a2a2a;
             border-radius: 15px;
-            padding: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            text-align: center;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+        
+        .product-card:active {
+            transform: scale(0.98);
         }
         
         .product-image {
             width: 100%;
-            height: 120px;
-            background: #e0e0e0;
-            border-radius: 10px;
-            margin-bottom: 10px;
+            height: 150px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 40px;
+            font-size: 50px;
+        }
+        
+        .product-info {
+            padding: 15px;
         }
         
         .product-name {
             font-weight: bold;
             margin-bottom: 5px;
-            font-size: 14px;
         }
         
         .product-price {
-            color: #ff4444;
+            color: #4CAF50;
+            font-size: 18px;
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
         }
         
-        .product-location {
+        .product-stock {
             font-size: 12px;
-            color: #666;
+            color: #888;
             margin-bottom: 10px;
         }
         
         .add-to-cart {
-            background: #2481cc;
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 8px 15px;
             border-radius: 10px;
+            font-weight: bold;
             cursor: pointer;
-            width: 100%;
         }
         
-        .cart-footer {
+        /* Нижняя навигация */
+        .bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
-            background: white;
-            padding: 15px 20px;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            background: #2a2a2a;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            justify-content: space-around;
+            padding: 10px 0;
+            border-top: 1px solid #3a3a3a;
         }
         
-        .checkout-btn {
-            background: #32a852;
-            color: white;
+        .nav-item {
+            background: none;
             border: none;
-            padding: 12px 25px;
-            border-radius: 10px;
+            color: #888;
+            padding: 10px;
             cursor: pointer;
-            font-weight: bold;
+            transition: color 0.3s;
         }
         
-        .cart-item {
-            background: white;
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        .nav-item.active {
+            color: #667eea;
         }
         
-        .cart-item-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
+        .nav-item span {
+            display: block;
+            font-size: 24px;
+            margin-bottom: 5px;
         }
         
-        .cart-item-name {
-            font-weight: bold;
-            font-size: 16px;
-        }
-        
-        .cart-item-price {
-            color: #ff4444;
-            font-weight: bold;
-        }
-        
-        .cart-item-controls {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .quantity-btn {
-            width: 30px;
-            height: 30px;
-            border: none;
-            border-radius: 5px;
-            background: #2481cc;
-            color: white;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        
-        .quantity {
-            font-weight: bold;
-            min-width: 30px;
-            text-align: center;
-        }
-        
-        .remove-btn {
-            background: #ff4444;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
+        .nav-item p {
             font-size: 12px;
         }
         
-        .cart-summary {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        /* Корзина */
+        .cart-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #f44336;
+            color: white;
+            border-radius: 10px;
+            padding: 2px 6px;
+            font-size: 10px;
+            font-weight: bold;
         }
         
-        .empty-cart {
-            text-align: center;
-            padding: 40px;
-            background: white;
-            border-radius: 15px;
-            color: #666;
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Мой Магазин</h1>
-        <p>Товары с самовывозом</p>
-        <button class="user-info-btn" onclick="showUserInfo()">👤 Мой аккаунт</button>
-    </div>
-    
-    <div class="tab-buttons">
-        <button class="tab-btn active" onclick="switchTab('products')">🛍️ Покупки</button>
-        <button class="tab-btn" onclick="switchTab('cart')">🛒 Корзина</button>
-    </div>
-    
-    <div id="products-tab" class="tab-content active">
-        <div id="products" class="products-grid">
-            <!-- Товары загружаются здесь -->
-        </div>
-    </div>
-    
-    <div id="cart-tab" class="tab-content">
-        <div id="cart-items">
-            <!-- Товары корзины загружаются здесь -->
-        </div>
-        <div id="cart-empty" class="empty-cart" style="display: none;">
-            <h3>🛒 Корзина пуста</h3>
-            <p>Добавьте товары из каталога</p>
-        </div>
-        <div id="cart-summary" class="cart-summary">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <div>
-                    <strong>Итого: <span id="cart-total">0</span> руб.</strong>
-                    <div id="cart-count">0 товаров</div>
-                </div>
-                <button class="checkout-btn" onclick="checkout()">Оформить заказ</button>
+    <!-- Проверка возраста -->
+    <div id="age-verification" class="age-verification">
+        <div class="age-modal">
+            <h2>⚠️ Внимание!</h2>
+            <p>Данный сайт предназначен для лиц старше 18 лет. Продажа никотинсодержащей продукции несовершеннолетним запрещена.</p>
+            <p><strong>Вам есть 18 лет?</strong></p>
+            <div class="age-buttons">
+                <button class="age-btn yes" onclick="verifyAge(true)">Да, мне есть 18</button>
+                <button class="age-btn no" onclick="verifyAge(false)">Нет</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Основной контент -->
+    <div id="main-content" class="hidden">
+        <div class="header">
+            <h1>🚬 VAPE SHOP</h1>
+            <p>Премиум вейпы и жидкости</p>
+        </div>
+        
+        <!-- Категории -->
+        <div class="categories">
+            <button class="category-btn active" onclick="filterCategory('all')">Все товары</button>
+            <button class="category-btn" onclick="filterCategory('devices')">Устройства</button>
+            <button class="category-btn" onclick="filterCategory('pods')">Pod-системы</button>
+            <button class="category-btn" onclick="filterCategory('liquids')">Жидкости</button>
+            <button class="category-btn" onclick="filterCategory('disposable')">Одноразки</button>
+            <button class="category-btn" onclick="filterCategory('accessories')">Аксессуары</button>
+        </div>
+        
+        <!-- Поиск -->
+        <div class="search-bar">
+            <input type="text" class="search-input" placeholder="🔍 Поиск товаров..." oninput="searchProducts(this.value)">
+        </div>
+        
+        <!-- Товары -->
+        <div id="products" class="products-grid">
+            <!-- Товары загружаются через JS -->
+        </div>
+        
+        <!-- Нижняя навигация -->
+        <div class="bottom-nav">
+            <button class="nav-item active" onclick="showPage('catalog')">
+                <span>🏠</span>
+                <p>Каталог</p>
+            </button>
+            <button class="nav-item" onclick="showPage('cart')" style="position: relative;">
+                <span>🛒</span>
+                <p>Корзина</p>
+                <span id="cart-badge" class="cart-badge hidden">0</span>
+            </button>
+            <button class="nav-item" onclick="showPage('orders')">
+                <span>📦</span>
+                <p>Заказы</p>
+            </button>
+            <button class="nav-item" onclick="showPage('profile')">
+                <span>👤</span>
+                <p>Профиль</p>
+            </button>
         </div>
     </div>
 

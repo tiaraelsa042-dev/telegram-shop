@@ -1,141 +1,227 @@
-// Товары вашего магазина
+// Telegram Web App
+const tg = window.Telegram.WebApp;
+
+// Каталог товаров
 const products = [
+    // Pod-системы
     {
         id: 1,
-        name: "Кроссовки Nike Air",
-        price: 4990,
-        emoji: "",
-        location: "м. Проспект Мира\nСамовывоз после 18:00",
-        description: "Стильные кроссовки для повседневной носки"
+        name: "VOOPOO Drag Nano 2",
+        category: "pods",
+        price: 2490,
+        stock: "В наличии",
+        emoji: "💨",
+        description: "Компактная pod-система с мощностью 20W",
+        nicotine: "Под жидкость"
     },
     {
         id: 2,
-        name: "Футболка Basic", 
+        name: "Vaporesso XROS 3",
+        category: "pods",
         price: 1990,
-        emoji: "",
-        location: "м. Проспект Мира\nСамовывоз после 18:00",
-        description: "Хлопковая футболка премиум качества"
+        stock: "В наличии",
+        emoji: "💨",
+        description: "Популярная pod-система с регулировкой обдува",
+        nicotine: "Под жидкость"
     },
+    
+    // Одноразки
     {
         id: 3,
-        name: "Джинсы Slim",
-        price: 3590,
-        emoji: "",
-        location: "м. Проспект Мира\nСамовывоз после 18:00", 
-        description: "Классические джинсы прямого покроя"
+        name: "ELF BAR 5000",
+        category: "disposable",
+        price: 890,
+        stock: "В наличии",
+        emoji: "🍓",
+        description: "5000 затяжек, клубника-банан",
+        nicotine: "20mg"
     },
     {
         id: 4,
-        name: "Куртка Демисезон",
-        price: 6990,
-        emoji: "",
-        location: "м. Проспект Мира\nСамовывоз после 18:00",
-        description: "Теплая куртка для межсезонья"
+        name: "HQD CUVIE Plus",
+        category: "disposable",
+        price: 790,
+        stock: "В наличии",
+        emoji: "🍑",
+        description: "1200 затяжек, персик-манго",
+        nicotine: "20mg"
+    },
+    {
+        id: 5,
+        name: "LOST MARY BM5000",
+        category: "disposable",
+        price: 990,
+        stock: "В наличии",
+        emoji: "🍇",
+        description: "5000 затяжек, виноград-лед",
+        nicotine: "20mg"
+    },
+    
+    // Жидкости
+    {
+        id: 6,
+        name: "Brusko Salt - Малина",
+        category: "liquids",
+        price: 390,
+        stock: "В наличии",
+        emoji: "🍇",
+        description: "Солевой никотин 20mg, 30мл",
+        nicotine: "20mg"
+    },
+    {
+        id: 7,
+        name: "Husky Premium - Манго",
+        category: "liquids",
+        price: 450,
+        stock: "В наличии",
+        emoji: "🥭",
+        description: "Премиум жидкость, 30мл",
+        nicotine: "20mg"
+    },
+    {
+        id: 8,
+        name: "Chaser Black - Табак",
+        category: "liquids",
+        price: 420,
+        stock: "В наличии",
+        emoji: "🚬",
+        description: "Табачная линейка, 30мл",
+        nicotine: "12mg"
+    },
+    
+    // Устройства
+    {
+        id: 9,
+        name: "GeekVape Aegis Legend 2",
+        category: "devices",
+        price: 4990,
+        stock: "В наличии",
+        emoji: "⚡",
+        description: "Мощный бокс-мод 200W, защита IP68",
+        nicotine: "Без никотина"
+    },
+    {
+        id: 10,
+        name: "Vaporesso GEN 200",
+        category: "devices",
+        price: 3990,
+        stock: "В наличии",
+        emoji: "⚡",
+        description: "Двухаккумуляторный мод с чипсетом AXON",
+        nicotine: "Без никотина"
+    },
+    
+    // Аксессуары
+    {
+        id: 11,
+        name: "Испаритель VOOPOO PnP",
+        category: "accessories",
+        price: 290,
+        stock: "В наличии",
+        emoji: "🔧",
+        description: "Сменный испаритель 0.3 Ом",
+        nicotine: "Без никотина"
+    },
+    {
+        id: 12,
+        name: "Аккумулятор 18650",
+        category: "accessories",
+        price: 590,
+        stock: "В наличии",
+        emoji: "🔋",
+        description: "Высокотоковый аккумулятор 3000mAh",
+        nicotine: "Без никотина"
     }
 ];
 
+// Корзина
 let cart = [];
-const tg = window.Telegram.WebApp;
+let currentCategory = 'all';
+let ageVerified = false;
 
-// Инициализация приложения
+// Инициализация
 function init() {
-    tg.expand(); // Раскрыть на весь экран
-    tg.enableClosingConfirmation(); // Подтверждение закрытия
-    displayProducts();
-    updateCart();
-    displayCart();
-    checkUserStatus();
+    tg.expand();
+    tg.enableClosingConfirmation();
+    
+    // Проверяем, прошел ли пользователь проверку возраста
+    const verified = localStorage.getItem('ageVerified');
+    if (verified === 'true') {
+        ageVerified = true;
+        showMainContent();
+    }
 }
 
-// Проверить статус аккаунта пользователя
-function checkUserStatus() {
-    const user = tg.initDataUnsafe?.user;
-    
-    if (user) {
-        console.log('Данные пользователя:', user);
-        
-        // Показываем информацию в консоли для отладки
-        console.log('ID:', user.id);
-        console.log('Имя:', user.first_name);
-        console.log('Фамилия:', user.last_name);
-        console.log('Username:', user.username);
-        console.log('Язык:', user.language_code);
-        console.log('Premium:', user.is_premium);
-        
-        // Можно показать пользователю его статус
-        const userName = user.first_name + (user.last_name ? ' ' + user.last_name : '');
-        const userStatus = user.is_premium ? 'Premium' : 'Обычный';
-        
-        // Обновляем заголовок с именем пользователя
-        document.querySelector('h1').textContent = `Мой Магазин - ${userName}`;
+// Проверка возраста
+function verifyAge(isAdult) {
+    if (isAdult) {
+        ageVerified = true;
+        localStorage.setItem('ageVerified', 'true');
+        document.getElementById('age-verification').classList.add('hidden');
+        showMainContent();
+        tg.HapticFeedback.notificationOccurred('success');
     } else {
-        console.log('Пользователь не авторизован');
-        showAlert('Пожалуйста, откройте приложение через Telegram');
+        tg.showAlert('Доступ запрещен. Продажа никотинсодержащей продукции лицам младше 18 лет запрещена.');
+        tg.close();
     }
 }
 
-// Показать детальную информацию о пользователе
-function showUserInfo() {
-    const user = tg.initDataUnsafe?.user;
+// Показать основной контент
+function showMainContent() {
+    document.getElementById('main-content').classList.remove('hidden');
+    displayProducts();
+    updateCartBadge();
+}
+
+// Фильтрация по категориям
+function filterCategory(category) {
+    currentCategory = category;
     
-    if (!user) {
-        showAlert('Информация о пользователе недоступна');
-        return;
-    }
-    
-    const userName = user.first_name + (user.last_name ? ' ' + user.last_name : '');
-    const userStatus = user.is_premium ? '✅ Premium' : '👤 Обычный';
-    const userInfo = `
-👤 Имя: ${userName}
-🆔 ID: ${user.id}
-🔗 Username: @${user.username || 'не указан'}
-🌐 Язык: ${user.language_code || 'неизвестен'}
-💎 Статус: ${userStatus}
-    `.trim();
-    
-    tg.showPopup({
-        title: 'Статус аккаунта',
-        message: userInfo,
-        buttons: [
-            {id: 'ok', type: 'default', text: 'OK'}
-        ]
+    // Обновляем активную кнопку
+    document.querySelectorAll('.category-btn').forEach(btn => {
+        btn.classList.remove('active');
     });
-}
-
-// Переключение вкладок
-function switchTab(tab) {
-    // Убираем активный класс у всех кнопок и вкладок
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+    event.target.classList.add('active');
     
-    // Добавляем активный класс выбранной вкладке
-    if (tab === 'products') {
-        document.querySelector('.tab-btn:first-child').classList.add('active');
-        document.getElementById('products-tab').classList.add('active');
-    } else if (tab === 'cart') {
-        document.querySelector('.tab-btn:last-child').classList.add('active');
-        document.getElementById('cart-tab').classList.add('active');
-        displayCart(); // Обновляем корзину при переключении
-    }
+    displayProducts();
+    tg.HapticFeedback.impactOccurred('light');
 }
 
-// Показать товары
-function displayProducts() {
+// Поиск товаров
+function searchProducts(query) {
+    const filtered = products.filter(product => 
+        product.name.toLowerCase().includes(query.toLowerCase()) ||
+        product.description.toLowerCase().includes(query.toLowerCase())
+    );
+    displayProducts(filtered);
+}
+
+// Отображение товаров
+function displayProducts(productsToShow = null) {
     const container = document.getElementById('products');
+    container.innerHTML = '';
     
-    products.forEach(product => {
-        const productEl = document.createElement('div');
-        productEl.className = 'product-card';
-        productEl.innerHTML = `
+    let filtered = productsToShow || products;
+    
+    if (!productsToShow && currentCategory !== 'all') {
+        filtered = products.filter(p => p.category === currentCategory);
+    }
+    
+    filtered.forEach(product => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
             <div class="product-image">${product.emoji}</div>
-            <div class="product-name">${product.name}</div>
-            <div class="product-price">${product.price} руб.</div>
-            <div class="product-location">${product.location}</div>
-            <button class="add-to-cart" onclick="addToCart(${product.id})">
-                Добавить в корзину
-            </button>
+            <div class="product-info">
+                <div class="product-name">${product.name}</div>
+                <div class="product-price">${product.price} ₽</div>
+                <div class="product-stock">${product.stock} • ${product.nicotine}</div>
+                <button class="add-to-cart" onclick="addToCart(${product.id})">
+                    В корзину
+                </button>
+            </div>
         `;
-        container.appendChild(productEl);
+        container.appendChild(card);
     });
 }
 
@@ -153,59 +239,121 @@ function addToCart(productId) {
         });
     }
     
-    tg.HapticFeedback.impactOccurred('light'); // Вибрация
-    updateCart();
-    displayCart();
-    showAlert(` ${product.name} добавлен в корзину!`);
+    updateCartBadge();
+    tg.HapticFeedback.notificationOccurred('success');
+    
+    // Показываем уведомление
+    showNotification(`${product.name} добавлен в корзину`);
 }
 
-// Обновить корзину
-function updateCart() {
-    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+// Обновить значок корзины
+function updateCartBadge() {
+    const badge = document.getElementById('cart-badge');
     const count = cart.reduce((sum, item) => sum + item.quantity, 0);
     
-    document.getElementById('cart-total').textContent = total;
-    document.getElementById('cart-count').textContent = `${count} товар(ов)`;
+    if (count > 0) {
+        badge.textContent = count;
+        badge.classList.remove('hidden');
+    } else {
+        badge.classList.add('hidden');
+    }
 }
 
-// Показать корзину
-function displayCart() {
-    const container = document.getElementById('cart-items');
-    const emptyMessage = document.getElementById('cart-empty');
-    const summary = document.getElementById('cart-summary');
-    
-    container.innerHTML = '';
-    
-    if (cart.length === 0) {
-        emptyMessage.style.display = 'block';
-        summary.style.display = 'none';
-        return;
-    }
-    
-    emptyMessage.style.display = 'none';
-    summary.style.display = 'block';
-    
-    cart.forEach(item => {
-        const itemEl = document.createElement('div');
-        itemEl.className = 'cart-item';
-        itemEl.innerHTML = `
-            <div class="cart-item-header">
-                <div class="cart-item-name">${item.emoji} ${item.name}</div>
-                <div class="cart-item-price">${item.price * item.quantity} руб.</div>
-            </div>
-            <div class="cart-item-controls">
-                <button class="quantity-btn" onclick="changeQuantity(${item.id}, -1)">-</button>
-                <span class="quantity">${item.quantity}</span>
-                <button class="quantity-btn" onclick="changeQuantity(${item.id}, 1)">+</button>
-                <span style="margin-left: auto; color: #666; font-size: 14px;">${item.price} руб./шт.</span>
-                <button class="remove-btn" onclick="removeFromCart(${item.id})">Удалить</button>
-            </div>
-        `;
-        container.appendChild(itemEl);
+// Показать уведомление
+function showNotification(message) {
+    tg.showPopup({
+        title: '✅ Успешно',
+        message: message,
+        buttons: [{id: 'ok', type: 'default', text: 'OK'}]
     });
 }
 
-// Изменить количество товара
+// Переключение страниц
+function showPage(page) {
+    // Обновляем активную кнопку навигации
+    document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    event.target.closest('.nav-item').classList.add('active');
+    
+    tg.HapticFeedback.impactOccurred('light');
+    
+    switch(page) {
+        case 'catalog':
+            displayProducts();
+            break;
+        case 'cart':
+            showCart();
+            break;
+        case 'orders':
+            showOrders();
+            break;
+        case 'profile':
+            showProfile();
+            break;
+    }
+}
+
+// Показать корзину
+function showCart() {
+    const container = document.getElementById('products');
+    
+    if (cart.length === 0) {
+        container.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #888;">
+                <div style="font-size: 50px; margin-bottom: 20px;">🛒</div>
+                <h3>Корзина пуста</h3>
+                <p>Добавьте товары из каталога</p>
+            </div>
+        `;
+        return;
+    }
+    
+    container.innerHTML = '';
+    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    
+    // Товары в корзине
+    cart.forEach(item => {
+        const cartItem = document.createElement('div');
+        cartItem.style.gridColumn = '1/-1';
+        cartItem.className = 'product-card';
+        cartItem.innerHTML = `
+            <div style="padding: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div class="product-name">${item.emoji} ${item.name}</div>
+                        <div style="color: #888; font-size: 14px; margin: 5px 0;">${item.nicotine}</div>
+                        <div class="product-price">${item.price * item.quantity} ₽</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <button onclick="changeQuantity(${item.id}, -1)" style="width: 30px; height: 30px; border: none; background: #3a3a3a; color: white; border-radius: 5px;">-</button>
+                        <span>${item.quantity}</span>
+                        <button onclick="changeQuantity(${item.id}, 1)" style="width: 30px; height: 30px; border: none; background: #3a3a3a; color: white; border-radius: 5px;">+</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        container.appendChild(cartItem);
+    });
+    
+    // Итого и кнопка заказа
+    const summary = document.createElement('div');
+    summary.style.gridColumn = '1/-1';
+    summary.innerHTML = `
+        <div style="background: #2a2a2a; padding: 20px; border-radius: 15px; margin-top: 20px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                <span>Итого:</span>
+                <span style="font-size: 24px; font-weight: bold; color: #4CAF50;">${total} ₽</span>
+            </div>
+            <button onclick="checkout()" style="width: 100%; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold;">
+                Оформить заказ
+            </button>
+        </div>
+    `;
+    container.appendChild(summary);
+}
+
+// Изменить количество
 function changeQuantity(productId, change) {
     const item = cart.find(item => item.id === productId);
     if (!item) return;
@@ -213,78 +361,101 @@ function changeQuantity(productId, change) {
     item.quantity += change;
     
     if (item.quantity <= 0) {
-        removeFromCart(productId);
-        return;
+        cart = cart.filter(item => item.id !== productId);
     }
     
+    updateCartBadge();
+    showCart();
     tg.HapticFeedback.impactOccurred('light');
-    updateCart();
-    displayCart();
-}
-
-// Удалить товар из корзины
-function removeFromCart(productId) {
-    const item = cart.find(item => item.id === productId);
-    cart = cart.filter(item => item.id !== productId);
-    
-    tg.HapticFeedback.impactOccurred('medium');
-    updateCart();
-    displayCart();
-    showAlert(` ${item.name} удален из корзины`);
 }
 
 // Оформление заказа
 function checkout() {
-    if (cart.length === 0) {
-        showAlert(' Корзина пуста!');
-        return;
-    }
+    if (cart.length === 0) return;
     
-    const orderText = generateOrderText();
+    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    let orderText = 'Заказ:\n\n';
+    
+    cart.forEach(item => {
+        orderText += `${item.name} x${item.quantity} = ${item.price * item.quantity} ₽\n`;
+    });
+    
+    orderText += `\nИтого: ${total} ₽`;
     
     tg.showPopup({
-        title: ' Заказ оформлен!',
-        message: `Ваш заказ:\n${orderText}\n\n Самовывоз: м. Проспект Мира\n С вами свяжутся для подтверждения`,
+        title: '📦 Оформление заказа',
+        message: orderText + '\n\nПодтвердить заказ?',
         buttons: [
-            {id: 'ok', type: 'default', text: 'Отлично!'}
+            {id: 'confirm', type: 'default', text: 'Подтвердить'},
+            {id: 'cancel', type: 'cancel', text: 'Отмена'}
         ]
     }, (btnId) => {
-        // Заказ можно отправить на сервер или боту
-        sendOrderToBot(orderText);
-        cart = [];
-        updateCart();
-        displayCart();
+        if (btnId === 'confirm') {
+            // Отправляем данные боту
+            tg.sendData(JSON.stringify({
+                type: 'order',
+                items: cart,
+                total: total
+            }));
+            
+            cart = [];
+            updateCartBadge();
+            showNotification('Заказ успешно оформлен! С вами свяжется менеджер.');
+            showPage('catalog');
+        }
     });
 }
 
-// Текст заказа
-function generateOrderText() {
-    let text = '';
-    cart.forEach(item => {
-        text += ` ${item.name} - ${item.quantity}шт. = ${item.price * item.quantity} руб.\n`;
-    });
-    text += `\n Итого: ${cart.reduce((sum, item) => sum + (item.price * item.quantity), 0)} руб.`;
-    return text;
+// Показать заказы
+function showOrders() {
+    const container = document.getElementById('products');
+    container.innerHTML = `
+        <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #888;">
+            <div style="font-size: 50px; margin-bottom: 20px;">📦</div>
+            <h3>История заказов</h3>
+            <p>Здесь будут отображаться ваши заказы</p>
+        </div>
+    `;
 }
 
-// Отправить заказ боту (упрощенная версия)
-function sendOrderToBot(orderText) {
+// Показать профиль
+function showProfile() {
     const user = tg.initDataUnsafe?.user;
-    const userName = user?.first_name || 'Пользователь';
+    const container = document.getElementById('products');
     
-    // В реальном приложении здесь будет отправка на сервер
-    console.log(`Новый заказ от ${userName}:\n${orderText}`);
+    container.innerHTML = `
+        <div style="grid-column: 1/-1; padding: 20px;">
+            <div style="background: #2a2a2a; padding: 20px; border-radius: 15px; margin-bottom: 15px;">
+                <h3 style="margin-bottom: 15px;">👤 Профиль</h3>
+                <p style="color: #888; margin-bottom: 10px;">Имя: ${user?.first_name || 'Гость'} ${user?.last_name || ''}</p>
+                <p style="color: #888; margin-bottom: 10px;">ID: ${user?.id || 'Не определен'}</p>
+                <p style="color: #888;">Username: @${user?.username || 'не указан'}</p>
+            </div>
+            
+            <div style="background: #2a2a2a; padding: 20px; border-radius: 15px;">
+                <h3 style="margin-bottom: 15px;">⚙️ Настройки</h3>
+                <button onclick="clearAge()" style="width: 100%; padding: 12px; background: #3a3a3a; color: white; border: none; border-radius: 10px; margin-bottom: 10px;">
+                    Сбросить проверку возраста
+                </button>
+                <button onclick="contactSupport()" style="width: 100%; padding: 12px; background: #3a3a3a; color: white; border: none; border-radius: 10px;">
+                    📞 Связаться с поддержкой
+                </button>
+            </div>
+        </div>
+    `;
 }
 
-// Показать уведомление
-function showAlert(message) {
-    tg.showPopup({
-        title: 'Уведомление',
-        message: message,
-        buttons: [{id: 'ok', type: 'default', text: 'OK'}]
-    });
+// Сбросить проверку возраста
+function clearAge() {
+    localStorage.removeItem('ageVerified');
+    location.reload();
 }
 
-// Запуск при загрузке
+// Связаться с поддержкой
+function contactSupport() {
+    tg.openLink('https://t.me/support');
+}
+
+// Запуск приложения
 tg.ready();
 init();
