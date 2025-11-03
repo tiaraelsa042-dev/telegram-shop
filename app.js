@@ -1,6 +1,15 @@
 // Telegram Web App
 const tg = window.Telegram.WebApp;
 
+// ID администраторов (замените на реальные ID)
+const ADMIN_IDS = [8248768964]; // Ваш ID, добавьте ID друзей через запятую
+
+// Проверка, является ли пользователь админом
+function isAdmin() {
+    const user = tg.initDataUnsafe?.user;
+    return user && ADMIN_IDS.includes(user.id);
+}
+
 // Каталог товаров
 const products = [
     // Pod-системы
@@ -171,6 +180,11 @@ function showMainContent() {
     document.getElementById('main-content').classList.remove('hidden');
     displayProducts();
     updateCartBadge();
+    
+    // Показываем админ-панель если пользователь админ
+    if (isAdmin()) {
+        document.getElementById('admin-nav').style.display = 'block';
+    }
 }
 
 // Фильтрация по категориям
@@ -270,6 +284,12 @@ function showNotification(message) {
 
 // Переключение страниц
 function showPage(page) {
+    // Проверка доступа к админ-панели
+    if (page === 'admin' && !isAdmin()) {
+        tg.showAlert('Доступ запрещен! Требуются права администратора.');
+        return;
+    }
+    
     // Обновляем активную кнопку навигации
     document.querySelectorAll('.nav-item').forEach(btn => {
         btn.classList.remove('active');
@@ -290,6 +310,9 @@ function showPage(page) {
             break;
         case 'profile':
             showProfile();
+            break;
+        case 'admin':
+            showAdminPanel();
             break;
     }
 }
@@ -454,6 +477,124 @@ function clearAge() {
 // Связаться с поддержкой
 function contactSupport() {
     tg.openLink('https://t.me/support');
+}
+
+// Админ-панель
+function showAdminPanel() {
+    const container = document.getElementById('products');
+    container.innerHTML = `
+        <div style="grid-column: 1/-1; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 15px; margin-bottom: 15px; text-align: center;">
+                <h3 style="color: white; margin-bottom: 10px;">⚙️ Админ-панель</h3>
+                <p style="color: rgba(255,255,255,0.9);">Управление вейп-магазином</p>
+            </div>
+            
+            <!-- Статистика -->
+            <div style="background: #2a2a2a; padding: 20px; border-radius: 15px; margin-bottom: 15px;">
+                <h4 style="margin-bottom: 15px;">📊 Статистика</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div style="background: #3a3a3a; padding: 15px; border-radius: 10px; text-align: center;">
+                        <div style="font-size: 24px; font-weight: bold; color: #4CAF50;">${products.length}</div>
+                        <div style="color: #888; font-size: 14px;">Товаров</div>
+                    </div>
+                    <div style="background: #3a3a3a; padding: 15px; border-radius: 10px; text-align: center;">
+                        <div style="font-size: 24px; font-weight: bold; color: #2196F3;">${cart.length}</div>
+                        <div style="color: #888; font-size: 14px;">В корзине</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Управление товарами -->
+            <div style="background: #2a2a2a; padding: 20px; border-radius: 15px; margin-bottom: 15px;">
+                <h4 style="margin-bottom: 15px;">📦 Управление товарами</h4>
+                <button onclick="addProduct()" style="width: 100%; padding: 12px; background: #4CAF50; color: white; border: none; border-radius: 10px; margin-bottom: 10px;">
+                    ➕ Добавить товар
+                </button>
+                <button onclick="editProducts()" style="width: 100%; padding: 12px; background: #2196F3; color: white; border: none; border-radius: 10px; margin-bottom: 10px;">
+                    ✏️ Редактировать товары
+                </button>
+                <button onclick="viewOrders()" style="width: 100%; padding: 12px; background: #FF9800; color: white; border: none; border-radius: 10px;">
+                    📋 Просмотреть заказы
+                </button>
+            </div>
+            
+            <!-- Управление пользователями -->
+            <div style="background: #2a2a2a; padding: 20px; border-radius: 15px; margin-bottom: 15px;">
+                <h4 style="margin-bottom: 15px;">👥 Управление пользователями</h4>
+                <button onclick="viewUsers()" style="width: 100%; padding: 12px; background: #9C27B0; color: white; border: none; border-radius: 10px; margin-bottom: 10px;">
+                    👤 Список пользователей
+                </button>
+                <button onclick="addAdmin()" style="width: 100%; padding: 12px; background: #673AB7; color: white; border: none; border-radius: 10px;">
+                    ➕ Добавить админа
+                </button>
+            </div>
+            
+            <!-- Настройки -->
+            <div style="background: #2a2a2a; padding: 20px; border-radius: 15px;">
+                <h4 style="margin-bottom: 15px;">⚙️ Настройки</h4>
+                <button onclick="exportData()" style="width: 100%; padding: 12px; background: #607D8B; color: white; border: none; border-radius: 10px; margin-bottom: 10px;">
+                    💾 Экспорт данных
+                </button>
+                <button onclick="clearCache()" style="width: 100%; padding: 12px; background: #f44336; color: white; border: none; border-radius: 10px;">
+                    🗑️ Очистить кэш
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+// Функции админ-панели
+function addProduct() {
+    tg.showPopup({
+        title: '➕ Добавить товар',
+        message: 'Функция добавления товара будет доступна в следующей версии',
+        buttons: [{id: 'ok', type: 'default', text: 'OK'}]
+    });
+}
+
+function editProducts() {
+    showNotification('Редактирование товаров в разработке');
+}
+
+function viewOrders() {
+    showNotification('Заказов пока нет');
+}
+
+function viewUsers() {
+    const user = tg.initDataUnsafe?.user;
+    tg.showPopup({
+        title: '👥 Пользователи',
+        message: `Текущий пользователь:\n👤 ${user?.first_name} ${user?.last_name || ''}\n🆔 ID: ${user?.id}`,
+        buttons: [{id: 'ok', type: 'default', text: 'OK'}]
+    });
+}
+
+function addAdmin() {
+    tg.showPopup({
+        title: '➕ Добавить админа',
+        message: 'Введите ID пользователя для добавления в админы:\n\nТекущие админы:\n' + ADMIN_IDS.join(', '),
+        buttons: [{id: 'ok', type: 'default', text: 'OK'}]
+    });
+}
+
+function exportData() {
+    const data = {
+        products: products,
+        cart: cart,
+        admins: ADMIN_IDS,
+        timestamp: new Date().toISOString()
+    };
+    
+    tg.sendData(JSON.stringify(data));
+    showNotification('Данные отправлены');
+}
+
+function clearCache() {
+    if (confirm('Вы уверены, что хотите очистить весь кэш?')) {
+        localStorage.clear();
+        showNotification('Кэш очищен');
+        setTimeout(() => location.reload(), 1000);
+    }
 }
 
 // Запуск приложения
