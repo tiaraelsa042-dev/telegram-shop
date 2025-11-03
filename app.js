@@ -601,8 +601,34 @@ function clearCache() {
 tg.ready();
 init();
 
+// Показать главные кнопки при старте
+function showMainButtons() {
+    if (tg.MainButton) {
+        tg.MainButton.text = '🚬 Открыть магазин';
+        tg.MainButton.color = '#667eea';
+        tg.MainButton.onClick(() => {
+            tg.expand();
+            showPage('catalog');
+        });
+        tg.MainButton.show();
+    }
+    
+    // Дополнительные кнопки
+    if (tg.SecondaryButton) {
+        tg.SecondaryButton.text = '🛒 Корзина';
+        tg.SecondaryButton.color = '#4CAF50';
+        tg.SecondaryButton.onClick(() => {
+            showPage('cart');
+        });
+        tg.SecondaryButton.show();
+    }
+}
+
 // Обработка команды /start для автоматического открытия
 if (window.location.search.includes('startapp')) {
     tg.expand();
     tg.HapticFeedback.notificationOccurred('success');
+    showMainButtons();
+} else {
+    showMainButtons();
 }
