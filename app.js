@@ -44,6 +44,62 @@ function init() {
     displayProducts();
     updateCart();
     displayCart();
+    checkUserStatus();
+}
+
+// Проверить статус аккаунта пользователя
+function checkUserStatus() {
+    const user = tg.initDataUnsafe?.user;
+    
+    if (user) {
+        console.log('Данные пользователя:', user);
+        
+        // Показываем информацию в консоли для отладки
+        console.log('ID:', user.id);
+        console.log('Имя:', user.first_name);
+        console.log('Фамилия:', user.last_name);
+        console.log('Username:', user.username);
+        console.log('Язык:', user.language_code);
+        console.log('Premium:', user.is_premium);
+        
+        // Можно показать пользователю его статус
+        const userName = user.first_name + (user.last_name ? ' ' + user.last_name : '');
+        const userStatus = user.is_premium ? 'Premium' : 'Обычный';
+        
+        // Обновляем заголовок с именем пользователя
+        document.querySelector('h1').textContent = `Мой Магазин - ${userName}`;
+    } else {
+        console.log('Пользователь не авторизован');
+        showAlert('Пожалуйста, откройте приложение через Telegram');
+    }
+}
+
+// Показать детальную информацию о пользователе
+function showUserInfo() {
+    const user = tg.initDataUnsafe?.user;
+    
+    if (!user) {
+        showAlert('Информация о пользователе недоступна');
+        return;
+    }
+    
+    const userName = user.first_name + (user.last_name ? ' ' + user.last_name : '');
+    const userStatus = user.is_premium ? '✅ Premium' : '👤 Обычный';
+    const userInfo = `
+👤 Имя: ${userName}
+🆔 ID: ${user.id}
+🔗 Username: @${user.username || 'не указан'}
+🌐 Язык: ${user.language_code || 'неизвестен'}
+💎 Статус: ${userStatus}
+    `.trim();
+    
+    tg.showPopup({
+        title: 'Статус аккаунта',
+        message: userInfo,
+        buttons: [
+            {id: 'ok', type: 'default', text: 'OK'}
+        ]
+    });
 }
 
 // Переключение вкладок
