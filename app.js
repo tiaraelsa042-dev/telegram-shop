@@ -603,24 +603,14 @@ init();
 
 // Показать главные кнопки при старте
 function showMainButtons() {
-    if (tg.MainButton) {
-        tg.MainButton.text = '🚬 Открыть магазин';
-        tg.MainButton.color = '#667eea';
-        tg.MainButton.onClick(() => {
-            tg.expand();
-            showPage('catalog');
-        });
-        tg.MainButton.show();
+    // Убираем главную кнопку
+    if (tg.MainButton && tg.MainButton.isVisible) {
+        tg.MainButton.hide();
     }
     
-    // Дополнительные кнопки
-    if (tg.SecondaryButton) {
-        tg.SecondaryButton.text = '🛒 Корзина';
-        tg.SecondaryButton.color = '#4CAF50';
-        tg.SecondaryButton.onClick(() => {
-            showPage('cart');
-        });
-        tg.SecondaryButton.show();
+    // Убираем дополнительную кнопку
+    if (tg.SecondaryButton && tg.SecondaryButton.isVisible) {
+        tg.SecondaryButton.hide();
     }
 }
 
