@@ -601,24 +601,14 @@ function clearCache() {
 tg.ready();
 init();
 
-// Показать главные кнопки при старте
-function showMainButtons() {
-    // Убираем главную кнопку
-    if (tg.MainButton && tg.MainButton.isVisible) {
-        tg.MainButton.hide();
-    }
-    
-    // Убираем дополнительную кнопку
-    if (tg.SecondaryButton && tg.SecondaryButton.isVisible) {
-        tg.SecondaryButton.hide();
-    }
+// Полностью убираем главную кнопку Telegram
+if (tg.MainButton) {
+    tg.MainButton.hide();
+    tg.MainButton.onClick(() => {}); // Убираем обработчики
 }
 
 // Обработка команды /start для автоматического открытия
 if (window.location.search.includes('startapp')) {
     tg.expand();
     tg.HapticFeedback.notificationOccurred('success');
-    showMainButtons();
-} else {
-    showMainButtons();
 }
